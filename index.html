@@ -43,8 +43,9 @@
   .ex-num{font-size:11px;font-weight:700;color:var(--txt3);margin-top:2px;min-width:16px;}
   .ex-info{flex:1;}
   .ex-name{font-size:14px;font-weight:600;color:var(--txt);line-height:1.3;}
-  .ex-muscle{font-size:10px;font-weight:600;color:var(--pink);margin-top:3px;text-transform:uppercase;letter-spacing:.5px;}
 
+  .muscles{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
+  .muscle-badge{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:var(--pink-bg);color:var(--pink);border:1px solid rgba(232,93,138,.25);}
   .dica{font-size:11px;color:var(--txt2);margin-top:8px;line-height:1.5;}
   .incentivo{font-size:11px;color:var(--pink);margin-top:6px;font-style:italic;opacity:.85;}
 
@@ -376,7 +377,10 @@ function buildWorkoutTabs() {
       html += `<div class="${cardClass}">`;
       html += `<div class="ex-header"><span class="ex-num">${ei+1}.</span><div class="ex-info">`;
       html += `<div class="ex-name">${ex.nome}</div>`;
-      if (ex.musculo) html += `<div class="ex-muscle">${ex.musculo}</div>`;
+      if (ex.musculo) {
+        const muscles = ex.musculo.split('+').map(m => m.trim());
+        html += `<div class="muscles">${muscles.map(m => `<span class="muscle-badge">${m}</span>`).join('')}</div>`;
+      }
       html += `</div></div>`;
 
       html += `<div class="dica">${ex.dica}</div>`;
@@ -515,7 +519,7 @@ function renderEvo() {
   [...data.historico].reverse().forEach(entry => {
     entry.entradas.filter(e => e.exercicio === evoFilter).forEach(e => {
       if (!exData[e.serie]) exData[e.serie] = [];
-      exData[e.serie].push({ data: entry.data, kg: e.kg });
+      exData[e.serie].push({ data: entry.data, kg: e.kg, volume: Math.round(e.kg * e.reps) });
     });
   });
   if (!Object.keys(exData).length) { chartsDiv.innerHTML = '<div class="no-data">Sem dados para este exercício.</div>'; return; }
@@ -523,7 +527,7 @@ function renderEvo() {
   Object.keys(exData).sort().forEach((serie, si) => {
     const div = document.createElement('div');
     div.className = 'chart-card';
-    div.innerHTML = `<div class="chart-label">Série ${serie} — carga (kg)</div><canvas id="ch-s${serie}" height="170"></canvas>`;
+    div.innerHTML = `<div class="chart-label">Série ${serie} — volume (kg × reps)</div><canvas id="ch-s${serie}" height="170"></canvas>`;
     chartsDiv.appendChild(div);
     setTimeout(() => {
       const ctx = document.getElementById(`ch-s${serie}`);
@@ -535,7 +539,7 @@ function renderEvo() {
             borderColor: colors[si%3], backgroundColor:'transparent',
             pointBackgroundColor: colors[si%3], tension:.35, borderWidth:2, pointRadius:4, pointHoverRadius:6 }]
         },
-        options: { responsive:true, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.parsed.y} kg`}} },
+        options: { responsive:true, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.parsed.y} kg×rep`}} },
           scales:{
             x:{ticks:{font:{size:10},color:'#555'},grid:{color:'rgba(255,255,255,0.04)'}},
             y:{ticks:{font:{size:10},color:'#555'},grid:{color:'rgba(255,255,255,0.04)'}}
