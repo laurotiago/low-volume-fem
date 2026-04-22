@@ -199,12 +199,12 @@ const STORAGE_KEY = 'lvp_fem_v2';
 const CONFIG_KEY  = 'lvp_fem_config';
 
 const DEFAULT_FICHA = {
-  seg:{title:'Segunda — Lower A',sub:'Glúteo + Posterior de Coxa',exercicios:[
-    {nome:'Hip Thrust',musculo:'Glúteo máximo',dica:'Costas apoiadas no banco, pés firmes no chão. Empurre o quadril para cima e segure 1 segundo no topo. Descida lenta e controlada.',incentivo:'Você consegue! Cada repetição é um passo para o resultado que você quer.',principal:true,glute:true},
-    {nome:'Stiff com Halteres',musculo:'Posterior de coxa + Glúteo inferior',dica:'Joelhos semi-flexionados e fixos. Desça sentindo o alongamento no posterior. Não arredonde a lombar — peito aberto.',incentivo:'Foco no alongamento. Você está mais forte do que pensa!',glute:true},
-    {nome:'Cadeira Flexora',musculo:'Isquiotibiais',dica:'Segure 1 segundo no pico de contração. Descida lenta — não deixe o peso cair. Quadril colado no banco.',incentivo:'Mais duas séries e você termina o posterior. Vai com tudo!',glute:false},
-    {nome:'Abdução em Pé (Polia Baixa)',musculo:'Glúteo médio',dica:'Mantém o tronco firme e sem balanço. Movimento controlado — não balance o quadril para compensar. Foco na contração lateral.',incentivo:'Esse exercício dá largura ao quadril. Você é incrível, continua!',glute:true},
-    {nome:'Panturrilha Sentado',musculo:'Sóleo',dica:'Desça até o alongamento máximo e segure 1 segundo antes de subir. Amplitude completa — não faça pela metade.',incentivo:'Último exercício do dia! Termina com tudo que você tem.',glute:false},
+  seg:{title:'Segunda — Lower A',sub:'Posterior de Coxa + Quadríceps + Glúteo',exercicios:[
+    {nome:'Cadeira Flexora',musculo:'Isquiotibiais',dica:'Comece pelo posterior — protege o joelho antes dos compostos. Segure 1 segundo no pico de contração. Descida lenta.',incentivo:'Você consegue! Cada repetição é um passo para o resultado que você quer.',glute:false},
+    {nome:'Hack Machine',musculo:'Quadríceps+Glúteo',dica:'Pés centrais na plataforma. Amplitude confortável, não trave o joelho no topo. Menor sobrecarga na coluna que o agachamento livre.',incentivo:'Foco na execução. Você está mais forte do que pensa!',principal:true,glute:true},
+    {nome:'Stiff com Halteres',musculo:'Posterior de coxa+Glúteo inferior',dica:'Joelhos semi-flexionados e fixos. Desça sentindo o alongamento no posterior. Não arredonde a lombar — peito aberto.',incentivo:'Sinta cada fibra trabalhando. Você é incrível!',glute:true},
+    {nome:'Abdução em Pé (Polia Baixa)',musculo:'Glúteo médio',dica:'Tronco firme e sem balanço. Movimento controlado — não balance o quadril para compensar. Foco na contração lateral.',incentivo:'Esse exercício dá largura ao quadril. Continua, você está arrasando!',glute:true},
+    {nome:'Panturrilha em Pé',musculo:'Gastrocnêmio',dica:'Amplitude máxima — desça bem abaixo do degrau. Explosão na subida e 1 segundo no topo.',incentivo:'Último exercício do dia! Termina com tudo que você tem.',glute:false},
   ]},
   ter:{title:'Terça — Upper A',sub:'Costas, Peito, Ombro, Braços',exercicios:[
     {nome:'Puxada Alta Pronada',musculo:'Latíssimo do dorso',dica:'Puxe pensando em levar os cotovelos para baixo e para fora. Sinta a escápula fechar no final. Não balance o tronco.',incentivo:'Costas fortes mudam a postura e a silhueta. Você está construindo isso agora!',glute:false},
@@ -222,13 +222,13 @@ const DEFAULT_FICHA = {
     {nome:'Rosca Concentrada com Haltere',musculo:'Bíceps',dica:'Cotovelo apoiado na coxa — elimina o balanço. Desça até o alongamento máximo. Contraia forte no topo.',incentivo:'Foco total. Você consegue — mais duas séries!',glute:false},
     {nome:'Tríceps Polia Barra Reta',musculo:'Tríceps',dica:'Cotovelo fixo ao longo do corpo. Barra desce até a coxa. Contraia forte no final.',incentivo:'Último do dia! Termina forte — você é incrível!',glute:false},
   ]},
-  sex:{title:'Sexta — Lower B',sub:'Quadríceps + Glúteo',exercicios:[
-    {nome:'Agachamento Livre',musculo:'Quadríceps + Glúteo máximo',dica:'Comece leve e priorize técnica. Desça até a coxa ficar paralela ao chão. Joelhos alinhados com os pés. Se sentir dor no joelho, reduza a carga imediatamente.',incentivo:'O agachamento é rainha dos exercícios. E você é rainha do agachamento!',principal:true,glute:true},
-    {nome:'Leg Press (Pés Altos e Afastados)',musculo:'Glúteo + Quadríceps',dica:'Pés no topo da plataforma e afastados. Não trave o joelho no topo. Amplitude confortável — respeite o seu corpo.',incentivo:'Você está construindo pernas e glúteo incríveis. Acredito em você!',glute:true},
+  sex:{title:'Sexta — Lower B',sub:'Quadríceps + Glúteo + Posterior de Coxa',exercicios:[
+    {nome:'Agachamento Livre',musculo:'Quadríceps+Glúteo máximo',dica:'Comece leve e priorize técnica. Desça até a coxa ficar paralela ao chão. Joelhos alinhados com os pés. Se sentir dor no joelho, reduza a carga imediatamente.',incentivo:'O agachamento é rainha dos exercícios. E você é rainha do agachamento!',principal:true,glute:true},
+    {nome:'Leg Press (Pés Altos e Afastados)',musculo:'Glúteo+Quadríceps',dica:'Pés no topo da plataforma e afastados. Não trave o joelho no topo. Amplitude confortável — respeite o seu corpo.',incentivo:'Você está construindo pernas e glúteo incríveis. Acredito em você!',glute:true},
+    {nome:'Mesa Flexora',musculo:'Isquiotibiais',dica:'Posterior 2x na semana — perfil alongado, complementa a Cadeira Flexora da Segunda. Quadril colado no banco. Segure 1s no topo e desça lento.',incentivo:'Frequência é o segredo. Você está fazendo certo!',glute:false},
     {nome:'Cadeira Extensora',musculo:'Quadríceps',dica:'Quadríceps isolado. Subida explosiva, descida em 3 segundos. Se sentir desconforto no joelho, reduza a carga sem hesitar.',incentivo:'Foco no quadríceps. Você consegue — vai com tudo!',glute:false},
-    {nome:'Cadeira Adutora',musculo:'Adutores + Glúteo médio interno',dica:'Feche lento e controlado, abra sem deixar o peso cair. Tronco firme e sem balanço.',incentivo:'Esse exercício dá forma à parte interna da coxa. Você está arrasando!',glute:true},
-    {nome:'Elevação Pélvica Unilateral',musculo:'Glúteo máximo',dica:'Hip Thrust de uma perna só — glúteo máximo 2x na semana. Foco em isolar cada lado. Contraia no topo por 1 segundo.',incentivo:'Último exercício da semana! Termina com tudo — você é incrível!',glute:true},
-    {nome:'Panturrilha em Pé',musculo:'Gastrocnêmio',dica:'Amplitude máxima — desça bem abaixo do degrau. Explosão na subida e 1 segundo no topo. Frequência 2x na semana.',incentivo:'Cada treino completado é uma vitória. Você conseguiu mais uma!',glute:false},
+    {nome:'Cadeira Adutora',musculo:'Adutores+Glúteo médio',dica:'Feche lento e controlado, abra sem deixar o peso cair. Tronco firme e sem balanço.',incentivo:'Esse exercício dá forma à parte interna da coxa. Você está arrasando!',glute:true},
+    {nome:'Elevação Pélvica Unilateral',musculo:'Glúteo máximo',dica:'Hip Thrust de uma perna só — glúteo 2x na semana. Foco em isolar cada lado. Contraia no topo por 1 segundo.',incentivo:'Último exercício da semana! Termina com tudo — você é incrível!',glute:true},
   ]},
 };
 
