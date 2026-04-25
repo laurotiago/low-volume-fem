@@ -203,7 +203,8 @@ const DEFAULT_FICHA = {
     {nome:'Cadeira Flexora',musculo:'Isquiotibiais',dica:'Comece pelo posterior — protege o joelho antes dos compostos. Segure 1 segundo no pico de contração. Descida lenta.',incentivo:'Você consegue! Cada repetição é um passo para o resultado que você quer.',glute:false},
     {nome:'Hack Machine',musculo:'Quadríceps+Glúteo',dica:'Pés centrais na plataforma. Amplitude confortável, não trave o joelho no topo. Menor sobrecarga na coluna que o agachamento livre.',incentivo:'Foco na execução. Você está mais forte do que pensa!',principal:true,glute:true},
     {nome:'Stiff com Halteres',musculo:'Posterior de coxa+Glúteo inferior',dica:'Joelhos semi-flexionados e fixos. Desça sentindo o alongamento no posterior. Não arredonde a lombar — peito aberto.',incentivo:'Sinta cada fibra trabalhando. Você é incrível!',glute:true},
-    {nome:'Abdução em Pé (Polia Baixa)',musculo:'Glúteo médio',dica:'Tronco firme e sem balanço. Movimento controlado — não balance o quadril para compensar. Foco na contração lateral.',incentivo:'Esse exercício dá largura ao quadril. Continua, você está arrasando!',glute:true},
+    {nome:'Hip Thrust',musculo:'Glúteo máximo',dica:'Costas apoiadas no banco, pés firmes no chão. Empurre o quadril para cima contraindo o glúteo no topo. Segure 1 segundo. Descida lenta.',incentivo:'Cada repetição está moldando o resultado que você quer. Vai com tudo!',principal:true,glute:true},
+    {nome:'Cadeira Abdutora',musculo:'Glúteo médio',dica:'Tronco firme e sem balanço. Movimento controlado — foco na contração lateral do glúteo médio.',incentivo:'Esse exercício dá largura ao quadril. Continua, você está arrasando!',glute:true},
     {nome:'Panturrilha em Pé',musculo:'Gastrocnêmio',dica:'Amplitude máxima — desça bem abaixo do degrau. Explosão na subida e 1 segundo no topo.',incentivo:'Último exercício do dia! Termina com tudo que você tem.',glute:false},
   ]},
   ter:{title:'Terça — Upper A',sub:'Costas, Peito, Ombro, Braços',exercicios:[
@@ -416,7 +417,9 @@ function rebuildAndStay() {
 
 function ac(key, val) { data.campos[key] = val; saveData(); }
 
+let _saving = false;
 async function saveTreino() {
+  if (_saving) return;
   if (!['seg','ter','qui','sex'].includes(currentTab)) { alert('Selecione um dia de treino primeiro.'); return; }
   const day = currentTab;
   const d   = data.ficha[day];
@@ -430,6 +433,9 @@ async function saveTreino() {
     }
   });
   if (!entradas.length) { alert('Preencha ao menos uma carga antes de salvar.'); return; }
+  _saving = true;
+  const btnSave = document.querySelector('.btn-save');
+  if (btnSave) { btnSave.textContent = 'Salvando…'; btnSave.style.opacity = '0.6'; }
   const hoje  = new Date().toLocaleDateString('pt-BR');
   const entry = { data: hoje, dia: day, titulo: d.title, entradas, ts: Date.now() };
   data.historico.unshift(entry);
@@ -441,6 +447,8 @@ async function saveTreino() {
     data.pendentes = data.pendentes || []; data.pendentes.push(entry);
   }
   saveData(); updateStatusBar();
+  _saving = false;
+  if (btnSave) { btnSave.textContent = 'Salvar treino'; btnSave.style.opacity = '1'; }
   alert('Treino salvo' + (config.url && !navigator.onLine ? ' (offline — sincroniza quando conectar)' : '!'));
   if (confirm('Limpar os campos?')) limparCampos(true);
 }
@@ -494,6 +502,8 @@ function renderHist() {
   c.innerHTML = html;
 }
 
+let evoMode = 'volume';
+
 function renderEvo() {
   Object.values(chartInst).forEach(c => c.destroy()); chartInst = {};
   const allEx = new Set();
@@ -505,11 +515,17 @@ function renderEvo() {
   }
   const exList = Array.from(allEx);
   if (!evoFilter || !exList.includes(evoFilter)) evoFilter = exList[0];
-  document.getElementById('evo-filters').innerHTML = exList.map(ex =>
+
+  const modeHtml = `<div style="display:flex;gap:6px;margin-bottom:12px;">
+    <button class="filter-btn${evoMode==='volume'?' active':''}" onclick="setEvoMode('volume')">Volume (kg×reps)</button>
+    <button class="filter-btn${evoMode==='kg'?' active':''}" onclick="setEvoMode('kg')">Carga (kg)</button>
+  </div>`;
+
+  document.getElementById('evo-filters').innerHTML = modeHtml + exList.map(ex =>
     `<button class="filter-btn${ex===evoFilter?' active':''}" data-ex="${ex.replace(/"/g,'&quot;')}">${ex}</button>`
   ).join('');
   document.getElementById('evo-filters').onclick = function(e) {
-    const btn = e.target.closest('.filter-btn');
+    const btn = e.target.closest('.filter-btn[data-ex]');
     if (!btn) return;
     evoFilter = btn.dataset.ex; renderEvo();
   };
@@ -519,27 +535,31 @@ function renderEvo() {
   [...data.historico].reverse().forEach(entry => {
     entry.entradas.filter(e => e.exercicio === evoFilter).forEach(e => {
       if (!exData[e.serie]) exData[e.serie] = [];
-      exData[e.serie].push({ data: entry.data, kg: e.kg, volume: Math.round(e.kg * e.reps) });
+      exData[e.serie].push({ data: entry.data, kg: e.kg, reps: e.reps, volume: Math.round(e.kg * e.reps) });
     });
   });
   if (!Object.keys(exData).length) { chartsDiv.innerHTML = '<div class="no-data">Sem dados para este exercício.</div>'; return; }
   const colors = ['#e85d8a','#3b9de8','#00c97a'];
+  const isVol = evoMode === 'volume';
   Object.keys(exData).sort().forEach((serie, si) => {
     const div = document.createElement('div');
     div.className = 'chart-card';
-    div.innerHTML = `<div class="chart-label">Série ${serie} — volume (kg × reps)</div><canvas id="ch-s${serie}" height="170"></canvas>`;
+    const label = isVol ? `Série ${serie} — volume (kg × reps)` : `Série ${serie} — carga (kg)`;
+    div.innerHTML = `<div class="chart-label">${label}</div><canvas id="ch-s${serie}" height="170"></canvas>`;
     chartsDiv.appendChild(div);
     setTimeout(() => {
       const ctx = document.getElementById(`ch-s${serie}`);
       if (!ctx) return;
+      const yData = isVol ? exData[serie].map(d => d.volume) : exData[serie].map(d => d.kg);
+      const suffix = isVol ? 'kg×rep' : 'kg';
       chartInst[`s${serie}`] = new Chart(ctx, {
         type: 'line',
         data: { labels: exData[serie].map(d => d.data),
-          datasets: [{ label:'kg', data: exData[serie].map(d => d.kg),
+          datasets: [{ label: suffix, data: yData,
             borderColor: colors[si%3], backgroundColor:'transparent',
             pointBackgroundColor: colors[si%3], tension:.35, borderWidth:2, pointRadius:4, pointHoverRadius:6 }]
         },
-        options: { responsive:true, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.parsed.y} kg×rep`}} },
+        options: { responsive:true, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.parsed.y} ${suffix}`}} },
           scales:{
             x:{ticks:{font:{size:10},color:'#555'},grid:{color:'rgba(255,255,255,0.04)'}},
             y:{ticks:{font:{size:10},color:'#555'},grid:{color:'rgba(255,255,255,0.04)'}}
@@ -548,6 +568,8 @@ function renderEvo() {
     }, 50);
   });
 }
+
+function setEvoMode(mode) { evoMode = mode; renderEvo(); }
 
 function renderEdit() {
   const c = document.getElementById('edit-content');
@@ -605,6 +627,24 @@ buildWorkoutTabs();
 document.getElementById('tab-seg').classList.add('active');
 updateStatusBar();
 if (config.url && navigator.onLine) setTimeout(syncNow, 1500);
+
+// Service Worker — atualização automática
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw_feminino.js').then(reg => {
+    reg.addEventListener('updatefound', () => {
+      const newSW = reg.installing;
+      newSW.addEventListener('statechange', () => {
+        if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+          window.location.reload();
+        }
+      });
+    });
+  });
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) { refreshing = true; window.location.reload(); }
+  });
+}
 </script>
 </body>
 </html>
